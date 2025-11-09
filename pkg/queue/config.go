@@ -33,6 +33,9 @@ func (c Config) WithDefaults() Config {
 	if c.RetryStrategy == nil {
 		c.RetryStrategy = ExponentialBackoff{}
 	}
+	if c.Logger == nil {
+		c.Logger = defaultLogger()
+	}
 	if c.CleanupInterval > 0 && c.CleanupAge <= 0 {
 		c.CleanupAge = 24 * time.Hour
 	}
@@ -59,11 +62,4 @@ func (c Config) Validate() error {
 // RetryStrategy calculates the delay before retrying a failed job.
 type RetryStrategy interface {
 	NextRetry(retryCount int) time.Duration
-}
-
-// Logger defines the logging interface used by Queue.
-type Logger interface {
-	Debug(msg string, keysAndValues ...interface{})
-	Info(msg string, keysAndValues ...interface{})
-	Error(msg string, keysAndValues ...interface{})
 }

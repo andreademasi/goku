@@ -62,17 +62,30 @@ type EnqueueOptions struct {
 
 // EnqueueWithOptions adds a new job with additional options.
 func (q *Queue) EnqueueWithOptions(ctx context.Context, jobType string, payload interface{}, opts EnqueueOptions) (string, error) {
+	startTime := time.Now()
+
 	data, err := json.Marshal(payload)
 	if err != nil {
+		q.log("Error", "failed to marshal job payload",
+			"job_type", jobType,
+			"error", err)
 		return "", fmt.Errorf("failed to marshal job payload: %w", err)
 	}
 
 	if err := storage.ValidatePayloadSize(data); err != nil {
+		q.log("Warn", "payload size validation failed",
+			"job_type", jobType,
+			"payload_size", len(data),
+			"error", err)
 		return "", err
 	}
 
 	if opts.Priority != 0 {
 		if err := storage.ValidatePriority(opts.Priority); err != nil {
+			q.log("Warn", "priority validation failed",
+				"job_type", jobType,
+				"priority", opts.Priority,
+				"error", err)
 			return "", err
 		}
 	}
@@ -86,14 +99,28 @@ func (q *Queue) EnqueueWithOptions(ctx context.Context, jobType string, payload 
 
 	if !opts.ScheduledAt.IsZero() {
 		job.ScheduledAt = opts.ScheduledAt
+		q.log("Debug", "job scheduled for future execution",
+			"job_type", jobType,
+			"scheduled_at", opts.ScheduledAt,
+			"delay", time.Until(opts.ScheduledAt))
 	}
 
 	jobID, err := q.storage.Enqueue(ctx, job)
 	if err != nil {
+		q.log("Error", "failed to enqueue job",
+			"job_type", jobType,
+			"error", err)
 		return "", fmt.Errorf("failed to enqueue job: %w", err)
 	}
 
-	q.log("Info", "job enqueued", "job_id", jobID, "job_type", jobType, "priority", opts.Priority)
+	duration := time.Since(startTime)
+	q.log("Info", "job enqueued",
+		"job_id", jobID,
+		"job_type", jobType,
+		"priority", opts.Priority,
+		"max_retries", opts.MaxRetries,
+		"payload_size", len(data),
+		"duration_ms", duration.Milliseconds())
 
 	return jobID, nil
 }
@@ -272,7 +299,7 @@ func (q *Queue) RegisteredTypes() []string {
 	return q.handlers.types()
 }
 
-func (q *Queue) log(level string, msg string, keysAndValues ...interface{}) {
+func (q *Queue) log(level string, msg string, keysAndValues ...any) {
 	if q.config.Logger == nil {
 		return
 	}
@@ -282,6 +309,8 @@ func (q *Queue) log(level string, msg string, keysAndValues ...interface{}) {
 		q.config.Logger.Debug(msg, keysAndValues...)
 	case "Info":
 		q.config.Logger.Info(msg, keysAndValues...)
+	case "Warn":
+		q.config.Logger.Warn(msg, keysAndValues...)
 	case "Error":
 		q.config.Logger.Error(msg, keysAndValues...)
 	}
