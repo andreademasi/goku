@@ -271,7 +271,7 @@ func transactionExample(ctx context.Context, store *sqlite.SQLiteStorage) {
 
 	// Verify
 	jobs, _ := store.ListJobs(ctx, storage.JobFilter{
-		Types: []string{"SendEmail"},
+		Types:    []string{"SendEmail"},
 		Statuses: []storage.JobStatus{storage.StatusPending},
 	})
 	fmt.Printf("   Total pending SendEmail jobs: %d\n", len(jobs))
@@ -417,4 +417,3 @@ func getFileSize(path string) float64 {
 	}
 	return float64(info.Size())
 }
-

@@ -112,7 +112,7 @@ func TestSQLiteSpecific_Transactions(t *testing.T) {
 		// Now job should be visible
 		jobs, err := store.ListJobs(ctx, storage.JobFilter{})
 		require.NoError(t, err)
-		
+
 		// Find our job
 		found := false
 		for _, j := range jobs {
@@ -452,4 +452,3 @@ func TestSQLiteSpecific_IDGeneration(t *testing.T) {
 
 	assert.Equal(t, 10, len(ids), "should have 10 unique IDs")
 }
-

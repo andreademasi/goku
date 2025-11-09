@@ -24,14 +24,14 @@ func TestExponentialBackoff(t *testing.T) {
 		wantMin    time.Duration
 		wantMax    time.Duration
 	}{
-		{0, 1 * time.Second, 1 * time.Second},       // 2^0 = 1
-		{1, 2 * time.Second, 2 * time.Second},       // 2^1 = 2
-		{2, 4 * time.Second, 4 * time.Second},       // 2^2 = 4
-		{3, 8 * time.Second, 8 * time.Second},       // 2^3 = 8
-		{4, 16 * time.Second, 16 * time.Second},     // 2^4 = 16
-		{5, 32 * time.Second, 32 * time.Second},     // 2^5 = 32
-		{6, 60 * time.Second, 60 * time.Second},     // 2^6 = 64, capped at 60
-		{10, 60 * time.Second, 60 * time.Second},    // Should cap at MaxDelay
+		{0, 1 * time.Second, 1 * time.Second},    // 2^0 = 1
+		{1, 2 * time.Second, 2 * time.Second},    // 2^1 = 2
+		{2, 4 * time.Second, 4 * time.Second},    // 2^2 = 4
+		{3, 8 * time.Second, 8 * time.Second},    // 2^3 = 8
+		{4, 16 * time.Second, 16 * time.Second},  // 2^4 = 16
+		{5, 32 * time.Second, 32 * time.Second},  // 2^5 = 32
+		{6, 60 * time.Second, 60 * time.Second},  // 2^6 = 64, capped at 60
+		{10, 60 * time.Second, 60 * time.Second}, // Should cap at MaxDelay
 	}
 
 	for _, tt := range tests {
@@ -56,11 +56,11 @@ func TestExponentialBackoffWithJitter(t *testing.T) {
 		wantMin    time.Duration
 		wantMax    time.Duration
 	}{
-		{0, 500 * time.Millisecond, 1500 * time.Millisecond},   // 1s ± 50%
-		{1, 1 * time.Second, 3 * time.Second},                   // 2s ± 50%
-		{2, 2 * time.Second, 6 * time.Second},                   // 4s ± 50%
-		{3, 4 * time.Second, 12 * time.Second},                  // 8s ± 50%
-		{10, 0, 120 * time.Second},                              // With jitter can exceed MaxDelay
+		{0, 500 * time.Millisecond, 1500 * time.Millisecond}, // 1s ± 50%
+		{1, 1 * time.Second, 3 * time.Second},                // 2s ± 50%
+		{2, 2 * time.Second, 6 * time.Second},                // 4s ± 50%
+		{3, 4 * time.Second, 12 * time.Second},               // 8s ± 50%
+		{10, 0, 120 * time.Second},                           // With jitter can exceed MaxDelay
 	}
 
 	for _, tt := range tests {
@@ -245,13 +245,13 @@ func (f FibonacciBackoff) NextRetry(retryCount int) time.Duration {
 	if retryCount < 0 {
 		retryCount = 0
 	}
-	
+
 	// Calculate Fibonacci number
 	a, b := 1, 1
 	for i := 0; i < retryCount; i++ {
 		a, b = b, a+b
 	}
-	
+
 	delay := time.Duration(a) * time.Second
 	if delay > 1*time.Hour {
 		delay = 1 * time.Hour
@@ -289,7 +289,7 @@ func TestRetryStrategyInQueue(t *testing.T) {
 	}
 
 	store := memory.New()
-	
+
 	// Use a fast constant backoff for testing
 	q, err := New(Config{
 		Storage:       store,
@@ -302,7 +302,7 @@ func TestRetryStrategyInQueue(t *testing.T) {
 	// Track retry timings
 	var mu sync.Mutex
 	var attempts []time.Time
-	
+
 	q.Register("RetryJob", HandlerFunc[string](func(ctx context.Context, data string) error {
 		mu.Lock()
 		defer mu.Unlock()
@@ -346,5 +346,3 @@ func TestExponentialBackoffOverflow(t *testing.T) {
 	assert.Greater(t, delay, time.Duration(0), "delay should be positive")
 	assert.LessOrEqual(t, delay, 1*time.Hour, "delay should be capped at MaxDelay")
 }
-
-

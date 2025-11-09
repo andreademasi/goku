@@ -15,4 +15,3 @@ func TestMemoryCompliance(t *testing.T) {
 		return memory.New()
 	})
 }
-

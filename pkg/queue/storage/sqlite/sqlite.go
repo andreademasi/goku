@@ -16,7 +16,7 @@ import (
 const jobColumns = "id, type, payload, status, priority, max_retries, retry_count, scheduled_at, claimed_at, completed_at, error, created_at"
 
 // SQLiteStorage implements storage using SQLite.
-type SQLiteStorage struct{
+type SQLiteStorage struct {
 	db   *sql.DB
 	path string
 }
@@ -145,7 +145,7 @@ func (s *SQLiteStorage) Dequeue(ctx context.Context) (*storage.Job, error) {
 		return nil, nil
 	}
 
-	if err := tx.Commit(); err != nil{
+	if err := tx.Commit(); err != nil {
 		return nil, fmt.Errorf("sqlite: dequeue: failed to commit transaction: %w", err)
 	}
 
@@ -528,7 +528,7 @@ type queryable interface {
 }
 
 func insertJob(ctx context.Context, q queryable, job *storage.Job) (string, error) {
-	if err := storage.ValidatePriority(job.Priority); err != nil{
+	if err := storage.ValidatePriority(job.Priority); err != nil {
 		return "", fmt.Errorf("sqlite: enqueue: %w", err)
 	}
 

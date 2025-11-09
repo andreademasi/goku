@@ -51,7 +51,7 @@ func TestAutomaticCleanup(t *testing.T) {
 	}
 
 	// Start queue (this starts cleanup goroutine)
-	if err := q.Start(); err != nil{
+	if err := q.Start(); err != nil {
 		t.Fatalf("Failed to start queue: %v", err)
 	}
 	defer q.Stop()
@@ -61,7 +61,7 @@ func TestAutomaticCleanup(t *testing.T) {
 
 	// Check that old jobs were deleted
 	allJobs, _ := store.ListJobs(ctx, storage.JobFilter{})
-	
+
 	// The 5 old completed jobs should be deleted
 	// The 3 pending jobs may have been processed (completed), but shouldn't be deleted yet (too recent)
 	// So we should have at least the 3 recently completed jobs
@@ -71,7 +71,7 @@ func TestAutomaticCleanup(t *testing.T) {
 			completedJobs++
 		}
 	}
-	
+
 	if completedJobs < 3 {
 		t.Errorf("Expected at least 3 recently completed jobs remaining, got %d (total: %d)", completedJobs, len(allJobs))
 	}
@@ -84,7 +84,7 @@ func TestManualCleanup(t *testing.T) {
 		Storage: store,
 		Workers: 0, // No workers needed for this test
 	})
-	if err != nil{
+	if err != nil {
 		t.Fatalf("Failed to create queue: %v", err)
 	}
 
@@ -420,4 +420,3 @@ func TestStaleRecoveryDisabledByDefault(t *testing.T) {
 		t.Errorf("Expected status %s (recovery should be disabled), got %s", storage.StatusRunning, job.Status)
 	}
 }
-

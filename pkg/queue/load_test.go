@@ -664,4 +664,3 @@ func BenchmarkProcessThroughput(b *testing.B) {
 
 	b.ReportMetric(float64(b.N)/b.Elapsed().Seconds(), "jobs/sec")
 }
-

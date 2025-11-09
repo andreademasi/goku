@@ -254,22 +254,37 @@ func enqueueExampleJobs(ctx context.Context, q *queue.Queue) {
 // SimpleLogger implements the queue.Logger interface
 type SimpleLogger struct{}
 
-func (l *SimpleLogger) Debug(msg string, keysAndValues ...interface{}) {
+func (l *SimpleLogger) Debug(msg string, keysAndValues ...any) {
 	// Uncomment to see debug logs
-	// fmt.Printf("DEBUG: %s %v\n", msg, keysAndValues)
+	// fmt.Printf("DEBUG: %s", msg)
+	// for i := 0; i < len(keysAndValues); i += 2 {
+	//	if i+1 < len(keysAndValues) {
+	//		fmt.Printf(" %v=%v", keysAndValues[i], keysAndValues[i+1])
+	//	}
+	// }
+	// fmt.Println()
 }
 
-func (l *SimpleLogger) Info(msg string, keysAndValues ...interface{}) {
+func (l *SimpleLogger) Info(msg string, keysAndValues ...any) {
 	// Log important events
 	if msg == "job enqueued" || msg == "queue started" || msg == "queue stopped gracefully" {
-		// fmt.Printf("INFO: %s %v\n", msg, keysAndValues)
+		// fmt.Printf("INFO: %s", msg)
+		// ... print keysAndValues if needed
 	}
 }
 
-func (l *SimpleLogger) Error(msg string, keysAndValues ...interface{}) {
-	fmt.Printf("ERROR: %s %v\n", msg, keysAndValues)
+func (l *SimpleLogger) Warn(msg string, keysAndValues ...any) {
+	// Uncomment to see warning logs
+	// fmt.Printf("WARN: %s", msg)
+	// ... print keysAndValues if needed
 }
 
-
-
-
+func (l *SimpleLogger) Error(msg string, keysAndValues ...any) {
+	fmt.Printf("ERROR: %s", msg)
+	for i := 0; i < len(keysAndValues); i += 2 {
+		if i+1 < len(keysAndValues) {
+			fmt.Printf(" %v=%v", keysAndValues[i], keysAndValues[i+1])
+		}
+	}
+	fmt.Println()
+}

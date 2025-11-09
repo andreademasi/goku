@@ -250,4 +250,3 @@ func TestMemorySpecific_EmptyJobType(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "job type is required")
 }
-

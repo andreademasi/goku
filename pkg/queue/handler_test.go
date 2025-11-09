@@ -236,6 +236,7 @@ func TestHandlerContextCancellation(t *testing.T) {
 	// Stop queue (should cancel context)
 	stopStart := time.Now()
 	err = q.Stop()
+	require.NoError(t, err)
 	stopDuration := time.Since(stopStart)
 
 	// Stop should respect ShutdownTimeout
@@ -312,7 +313,7 @@ func TestHandlerWithNilPayload(t *testing.T) {
 	defer q.Stop()
 
 	ctx := context.Background()
-	
+
 	// Enqueue with nil payload
 	var nilString *string
 	_, err = q.Enqueue(ctx, "NilPayloadJob", nilString)
@@ -538,4 +539,3 @@ func TestPanicWithNil(t *testing.T) {
 	assert.NotNil(t, job.Error)
 	assert.Contains(t, *job.Error, "panic")
 }
-

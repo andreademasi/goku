@@ -599,4 +599,3 @@ func TestCountJobsMethod(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 3, len(typeBJobs))
 }
-
